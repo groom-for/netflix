@@ -10,4 +10,8 @@ const requests = {
     fetchDocumentaries: "/discover/movie?with_genres=99",
 }
 
+<<<<<<< HEAD
 export { requests };
+=======
+export default requests;
+>>>>>>> 237e2e6713f5ffa1b392fa81d8f00f9e6cb374bd
