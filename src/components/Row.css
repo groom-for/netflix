@@ -1,0 +1,156 @@
+.row {
+  margin-top:  1vw;
+  position: relative;
+}
+
+.row:first-of-type {
+  margin-top: -7vw;
+}
+
+h2 {
+  padding: 1vh 2vw 0vh 2vw;
+  font-size: 1vw;
+  font-weight:400;
+  color:rgb(181, 181, 181);
+
+  @media screen and (max-width: 48rem) {
+    padding-left: 3vw;
+  }
+
+}
+
+.slider {
+  position: relative;
+}
+
+
+.slider__arrow-left, 
+.slider__arrow-right {
+  background-clip: content-box;
+  padding: 1vw 0;
+  box-sizing: border-box;
+  transition: 400ms all ease-in-out;
+  cursor: pointer;
+  width: 3.2vw;
+  z-index: 1000;
+  position: absolute;
+  top: 0;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  visibility: visible;
+  opacity: 0.2;
+  background: rgba(0, 0, 0, 0.2);
+}
+
+
+
+.slider__arrow-left {
+  left: 0;
+}
+
+.slider__arrow-right {
+  right: 0;
+}
+
+.arrow {
+  font-size: 1.2rem;
+  transition: 400ms all ease-in-out;
+}
+
+.arrow:hover {
+  transition: 400ms all ease-in-out;
+  transform: scale(1.5);
+}
+
+.slider:hover .slider__arrow-left, .slider__arrow-right  {
+  transition: 400ms all ease-in-out;
+  visibility: visible;
+  opacity: 1;
+  font-size: 1vw;
+  font-weight: bold;
+}
+
+.slider__arrow-left:hover, .slider__arrow-right:hover {
+  background: rgba(20, 20, 20, 0.5);
+  transition: 400ms all ease-in-out;
+  opacity: 100;
+}
+
+.row__posters {
+  display: flex;
+  gap: 0.5em;
+  overflow-y: hidden;
+  overflow-x: scroll;
+  padding: 1vh 2vw;
+  scroll-behavior: smooth;
+  object-fit: contain;
+  transition: 400ms all ease-in-out;
+
+
+}
+
+.row__posters::-webkit-scrollbar {
+  display: none;
+}
+
+.row__poster {
+  object-fit: contain;
+  height: 20rem;
+  max-height: 20rem;
+  height: clamp(8rem, 25vw, 8rem);
+  width: auto;
+  border-radius: 6px;
+  
+}
+
+.row__poster:hover {
+  object-fit: contain;
+  transform: scale(1.04);
+  
+}
+
+.row__posterLarge {
+  width: clamp(8rem, 15vw, 8rem);
+  height: auto;
+  object-fit: contain;
+}
+
+.row__posterLarge:hover {
+  transform: scale(1.04);
+  opacity: 1;
+}
+
+.row__arrow-left, .row__arrow-left {
+  position: absolute;
+  top: 0;
+  height: 100%;
+  width: 2rem;
+  background: rgba(0, 0, 0, 0.2);
+  display: flex;
+  align-items: center;
+}
+
+.row__arrow-left {
+  left: 0;
+}
+.row__arrow-right {
+  right: 0;
+}
+
+@media screen and (min-width: 49rem) {
+  .row__poster {
+  }
+  .row__posterLarge {
+  }
+
+  
+}
+
+@media screen and (max-width: 48rem) {
+  .row__poster {
+  }
+  .row__posterLarge {
+  }
+}
