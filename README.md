@@ -21,7 +21,8 @@
 - Axios (API 요청)  
 - Styled-Components 또는 CSS 모듈 (스타일링)  
 - JavaScript (ES6+)  
-- Git & GitHub (브랜치 전략: `madelily` → `main`)  
+- Git & GitHub
+- Docker
 
 ---
 
