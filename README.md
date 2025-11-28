@@ -71,29 +71,26 @@ git clone https://github.com/groom-for/netflix.git
 cd netflix
 npm install
 npm run dev
+
 ▶ 주요 스크립트
-스크립트	설명
 npm run dev	Vite 개발 서버 실행 (기본 포트 5173)
 npm run build	프로덕션 빌드(dist/) 생성
 npm run preview	빌드 결과 로컬 미리 보기
 
 🐳 Docker 사용법 (Build & Run)
+
 1) 프로덕션 빌드
-bash
-코드 복사
 npm run build
 docker build -t netflix-clone .
+
 2) 실행
-bash
-코드 복사
 docker run --rm -p 8080:80 netflix-clone
+
 3) 접속
 arduino
-코드 복사
 http://localhost:8080
+
 📁 프로젝트 구조 (Project Structure)
-bash
-코드 복사
 /public
   └── nficon2016.ico
 /src
