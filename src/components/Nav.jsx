@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from "react";
-import { useNavigate } from "react-router-dom";
+import { NavLink, useNavigate } from "react-router-dom";
 import "./Nav.css";
 
 export default function Nav() {
@@ -27,7 +27,34 @@ export default function Nav() {
 
   const handleChange = (e) => {
     setSearchValue(e.target.value);
-    navigate(`/search?q=${e.target.value}`);
+  };
+
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    const trimmed = searchValue.trim();
+    if (!trimmed) return;
+    navigate(`/search?q=${encodeURIComponent(trimmed)}`);
+    setShowInput(false);
+  };
+
+  const primaryLinks = [
+    { label: "홈", path: "/" },
+    { label: "시리즈", path: "/category/series" },
+    { label: "영화", path: "/category/movies" },
+    { label: "게임", path: "/category/games" },
+    { label: "NEW! 요즘 대세 콘텐츠", path: "/category/new" },
+  ];
+
+  const handleNavClick = (path) => (e) => {
+    e.preventDefault();
+    if (!path) return;
+    navigate(path);
+    setShowInput(false);
+  };
+
+  const handleLogoClick = () => {
+    navigate("/");
+    window.scrollTo({ top: 0, behavior: "auto" });
   };
 
 
@@ -64,15 +91,15 @@ export default function Nav() {
         alt="Netflix logo"
         src="https://upload.wikimedia.org/wikipedia/commons/thumb/0/08/Netflix_2015_logo.svg/170px-Netflix_2015_logo.svg.png"
         className="nav__logo"
-        onClick={() => (window.location.href = "/")}
+        onClick={handleLogoClick}
       />
 
       <div className="nav__info">
-        <a href="#">홈</a>
-        <a href="#">시리즈</a>
-        <a href="#">영화</a>
-        <a href="#">게임</a>
-        <a href="#">NEW! 요즘 대세 콘텐츠</a>
+        {primaryLinks.map((link) => (
+          <a key={link.label} href={link.path} onClick={handleNavClick(link.path)}>
+            {link.label}
+          </a>
+        ))}
         <a href="#">내가 찜한 리스트</a>
         <a href="#">언어별로 찾아보기</a>
       </div>
@@ -83,11 +110,11 @@ export default function Nav() {
           <a href="#" className="nav__info2__menu">메뉴</a>
         }
       >
-        <a href="#">홈</a>
-        <a href="#">시리즈</a>
-        <a href="#">영화</a>
-        <a href="#">게임</a>
-        <a href="#">NEW! 요즘 대세 콘텐츠</a>
+        {primaryLinks.map((link) => (
+          <a key={`menu-${link.label}`} href={link.path} onClick={handleNavClick(link.path)}>
+            {link.label}
+          </a>
+        ))}
         <a href="#">내가 찜한 리스트</a>
         <a href="#">언어별로 찾아보기</a>
       </HoverMenu>
@@ -111,7 +138,7 @@ export default function Nav() {
           />
         </svg>
 
-        <div className={`nav__input ${showInput ? "show" : "hide"}`}>
+        <form className={`nav__input ${showInput ? "show" : "hide"}`} onSubmit={handleSubmit}>
           <svg
             xmlns="http://www.w3.org/2000/svg"
             fill="white"
@@ -133,11 +160,18 @@ export default function Nav() {
             type="text"
             placeholder="제목, 사람, 장르"
           />
-        </div>
+          <button type="submit" className="nav__submit" aria-label="검색"></button>
+        </form>
 
-        <a href="#" className="nav__kids">
+        <NavLink
+          to="/kids"
+          className={({ isActive }) =>
+            `nav__kids${isActive ? " nav__kids--active" : ""}`
+          }
+          onClick={() => setShowInput(false)}
+        >
           키즈
-        </a>
+        </NavLink>
 
         <HoverMenu
           contentClass="nav__bell__content"
@@ -197,7 +231,7 @@ export default function Nav() {
             <div className="nav__drop__profile">
               <a href="#">
                 <svg viewBox="0 0 24 24" width="24" height="24" data-icon="PencilMedium" data-icon-id=":r32:" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" role="img">
-                  <path clipRule="evenodd" clipRule="evenodd" d="M19.1213 1.7071C17.9497 0.535532 16.0503 0.53553 14.8787 1.7071L13.2929 3.29289L12.5858 4L1.58579 15C1.21071 15.3751 1 15.8838 1 16.4142V21C1 22.1046 1.89543 23 3 23H7.58579C8.11622 23 8.62493 22.7893 9 22.4142L20 11.4142L20.7071 10.7071L22.2929 9.12132C23.4645 7.94975 23.4645 6.05025 22.2929 4.87868L19.1213 1.7071ZM15.5858 7L14 5.41421L3 16.4142L3 19C3.26264 19 3.52272 19.0517 3.76537 19.1522C4.00802 19.2527 4.2285 19.4001 4.41421 19.5858C4.59993 19.7715 4.74725 19.992 4.84776 20.2346C4.94827 20.4773 5 20.7374 5 21L7.58579 21L18.5858 10L17 8.41421L6.70711 18.7071L5.29289 17.2929L15.5858 7ZM16.2929 3.12132C16.6834 2.73079 17.3166 2.73079 17.7071 3.12132L20.8787 6.29289C21.2692 6.68341 21.2692 7.31658 20.8787 7.7071L20 8.58578L15.4142 4L16.2929 3.12132Z" fill="gray"></path>
+                  <path fillRule="evenodd" clipRule="evenodd" d="M19.1213 1.7071C17.9497 0.535532 16.0503 0.53553 14.8787 1.7071L13.2929 3.29289L12.5858 4L1.58579 15C1.21071 15.3751 1 15.8838 1 16.4142V21C1 22.1046 1.89543 23 3 23H7.58579C8.11622 23 8.62493 22.7893 9 22.4142L20 11.4142L20.7071 10.7071L22.2929 9.12132C23.4645 7.94975 23.4645 6.05025 22.2929 4.87868L19.1213 1.7071ZM15.5858 7L14 5.41421L3 16.4142L3 19C3.26264 19 3.52272 19.0517 3.76537 19.1522C4.00802 19.2527 4.2285 19.4001 4.41421 19.5858C4.59993 19.7715 4.74725 19.992 4.84776 20.2346C4.94827 20.4773 5 20.7374 5 21L7.58579 21L18.5858 10L17 8.41421L6.70711 18.7071L5.29289 17.2929L15.5858 7ZM16.2929 3.12132C16.6834 2.73079 17.3166 2.73079 17.7071 3.12132L20.8787 6.29289C21.2692 6.68341 21.2692 7.31658 20.8787 7.7071L20 8.58578L15.4142 4L16.2929 3.12132Z" fill="gray"></path>
                 </svg>
                 프로필 관리
               </a>

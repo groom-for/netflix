@@ -25,9 +25,47 @@
   }
 }
 
+.banner__videoWrapper {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  z-index: 0;
+}
+
+.banner__video {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  min-width: 100%;
+  min-height: 100%;
+  width: 120%;
+  height: auto;
+  border: none;
+  pointer-events: none;
+}
+
+.banner__videoClose {
+  position: absolute;
+  top: 1rem;
+  right: 1rem;
+  background: rgba(0, 0, 0, 0.6);
+  border: none;
+  color: #fff;
+  width: 2.5rem;
+  height: 2.5rem;
+  border-radius: 50%;
+  z-index: 2;
+  font-size: 1.5rem;
+}
+
 .banner__contents {
   margin-left: 5%;
   padding-top: 10%;
+  position: relative;
+  z-index: 3;
 }
 
 .banner__title {
@@ -74,7 +112,6 @@
   flex-direction: row;
   justify-content: start;
   align-items: center;
-  cursor: pointer;
   outline: none;
   border: none;
   font-size: 1vw;

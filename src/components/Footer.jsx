@@ -1,5 +1,4 @@
-import React, { useEffect, useState } from 'react';
-import axios from '../api/axios';
+import React from 'react';
 import styled from 'styled-components'
 import { FaYoutube } from "react-icons/fa";
 import { FaTwitter } from "react-icons/fa";

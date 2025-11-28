@@ -30,7 +30,6 @@ h2 {
   padding: 1vw 0;
   box-sizing: border-box;
   transition: 400ms all ease-in-out;
-  cursor: pointer;
   width: 3.2vw;
   z-index: 1000;
   position: absolute;
@@ -87,8 +86,6 @@ h2 {
   scroll-behavior: smooth;
   object-fit: contain;
   transition: 400ms all ease-in-out;
-
-
 }
 
 .row__posters::-webkit-scrollbar {
@@ -115,11 +112,6 @@ h2 {
   width: clamp(8rem, 15vw, 8rem);
   height: auto;
   object-fit: contain;
-}
-
-.row__posterLarge:hover {
-  transform: scale(1.04);
-  opacity: 1;
 }
 
 .row__arrow-left, .row__arrow-left {

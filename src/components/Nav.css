@@ -19,7 +19,6 @@
 .nav__logo {
   width: 92.5px;
   object-fit: contain;
-  cursor: pointer;
 }
 
 .nav__right {
@@ -61,7 +60,6 @@
   width: 24px;
   height: 24px;
   margin-right: -10px;
-  cursor: pointer;
   transition: opacity 0.3s ease;
 }
 
@@ -94,12 +92,16 @@
 .nav__kids {
   color: white;
   text-decoration: none;
-  font-size: 1vw;
+  font-size: clamp(13px, 1vw, 16px);
+}
+
+.nav__kids--active {
+  color: #e50914;
 }
 
 @media (max-width: 1300px) {
   .nav__info > a {
-    font-size: 1vw;
+    font-size: clamp(13px, 1vw, 16px);
   }
 }
 @media (max-width: 950px) {
@@ -119,7 +121,7 @@
     display: block;
   }
   .nav__info2__wrapper a{
-    font-size: 1vw;
+    font-size: clamp(13px, 1vw, 16px);
   }
 }
 @media (min-width: 885px) {
@@ -214,7 +216,6 @@ background-color:rgba(62, 62, 62, 0.3);
 
 .nav__bell__title:hover {
   color: white;
-  cursor: pointer;
 }
 
 .nav__bell__date {
@@ -261,7 +262,6 @@ background-color:rgba(62, 62, 62, 0.3);
 .nav__avatar {
   width: 30px;
   object-fit: contain;
-  cursor: pointer;
 }
 
 .divide{
@@ -288,3 +288,11 @@ background-color:rgba(62, 62, 62, 0.3);
   padding-top: 5px;
 }
 
+.nav__submit {
+  border: none;
+  background: transparent;
+  padding: 0;
+  width: 0;
+  height: 0;
+  overflow: hidden;
+}
