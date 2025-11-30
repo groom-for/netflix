@@ -51,6 +51,7 @@ export interface TmdbMovie {
   id: number;
   name?: string;
   title?: string;
+  runtime?: number;
   original_name?: string;
   original_title?: string;
   overview?: string;

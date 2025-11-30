@@ -2,15 +2,24 @@ import React, { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import axios from "../../api/axios";
 import MovieModal from "../../components/MovieModal/MovieModal.jsx";
-import RecommendationGrid from "../../components/RecommendationGrid.jsx";
+import RecommendationGrid from "../../components/RecommendationGrid.js";
 import "./DetailPage.css";
+import {
+  TmdbMovie,
+  TmdbCredits,
+  TmdbGenre,
+  TmdbReleaseDateEntry,
+} from "../../types/tmdb";
 
 const IMAGE_BASE = "https://image.tmdb.org/t/p/original";
 
 export default function DetailPage() {
   const { movieId } = useParams();
-  const [movie, setMovie] = useState(null);
-  const [status, setStatus] = useState({ loading: true, error: null });
+  const [movie, setMovie] = useState<TmdbMovie | null>(null);
+  const [status, setStatus] = useState<{
+    loading: boolean;
+    error: string | null;
+  }>({ loading: true, error: null });
   const [recommendations, setRecommendations] = useState([]);
   const [selectedMovie, setSelectedMovie] = useState(null);
   const [modalOpen, setModalOpen] = useState(false);
@@ -83,22 +92,20 @@ export default function DetailPage() {
   }
 
   if (!movie) {
-    return (
-      <div className="detail-page__status">
-        영화를 찾을 수 없습니다.
-      </div>
-    );
+    return <div className="detail-page__status">영화를 찾을 수 없습니다.</div>;
   }
 
-  const director = getCrewNames(movie?.credits, "Director");
-  const writers = getCrewNames(movie?.credits, "Screenplay");
+  const director = getCrewNames(movie.credits, "Director");
+  const writers = getCrewNames(movie.credits, "Screenplay");
   const cast = getCastNames(movie?.credits);
   const genres = getGenreNames(movie?.genres);
   const certification = movie.adult
     ? "청소년 관람 불가"
-    : getCertification(movie?.release_dates);
+    : getCertification(
+        movie?.release_dates?.results as TmdbReleaseDateEntry[] | undefined
+      );
 
-  const handleRecommendationClick = async (rec) => {
+  const handleRecommendationClick = async (rec: TmdbMovie) => {
     try {
       const { data } = await axios.get(`/movie/${rec.id}`, {
         params: { append_to_response: "videos,credits,release_dates" },
@@ -147,12 +154,12 @@ export default function DetailPage() {
             {movie.overview || "줄거리 정보가 없습니다."}
           </p>
           <div className="detail-page__detail-list">
-            <DetailRow label="감독" value={director} />
-            <DetailRow label="출연" value={cast} />
-            <DetailRow label="각본" value={writers} />
-            <DetailRow label="장르" value={genres} />
-            <DetailRow label="영화 특징" value={movie.tagline} />
-            <DetailRow label="관람 등급" value={certification} />
+            <DetailRow label="감독" value={director || ""} />
+            <DetailRow label="출연" value={cast || ""} />
+            <DetailRow label="각본" value={writers || ""} />
+            <DetailRow label="장르" value={genres || ""} />
+            <DetailRow label="영화 특징" value={movie.tagline || ""} />
+            <DetailRow label="관람 등급" value={certification || ""} />
           </div>
         </div>
       </div>
@@ -166,13 +173,16 @@ export default function DetailPage() {
       </section>
 
       {modalOpen && selectedMovie && (
-        <MovieModal {...selectedMovie} setModalOpen={setModalOpen} />
+        <MovieModal
+          {...(selectedMovie as TmdbMovie)}
+          setModalOpen={setModalOpen}
+        />
       )}
     </div>
   );
 }
 
-function DetailRow({ label, value }) {
+function DetailRow({ label, value }: { label: string; value: string }) {
   return (
     <p className="detail-page__detail-row">
       <span>{label} :</span> {value || "정보 없음"}
@@ -180,29 +190,34 @@ function DetailRow({ label, value }) {
   );
 }
 
-function getCrewNames(credits, job) {
+function getCrewNames(credits: TmdbCredits | undefined, job: string) {
   return credits?.crew
     ?.filter((member) => member.job === job)
     .map((member) => member.name)
     .join(", ");
 }
 
-function getCastNames(credits) {
-  return credits?.cast?.slice(0, 5).map((member) => member.name).join(", ");
+function getCastNames(credits: TmdbCredits | undefined) {
+  return credits?.cast
+    ?.slice(0, 5)
+    .map((member) => member.name)
+    .join(", ");
 }
 
-function getGenreNames(genres) {
+function getGenreNames(genres: TmdbGenre[] | undefined) {
   return genres?.map((genre) => genre.name).join(", ");
 }
 
-function getCertification(release_dates) {
-  const release = release_dates?.results?.find(
+function getCertification(release_dates: TmdbReleaseDateEntry[] | undefined) {
+  console.log(release_dates);
+
+  const release = release_dates?.find(
     (item) => item.iso_3166_1 === "KR" || item.iso_3166_1 === "US"
   );
   const certification = release?.release_dates?.[0]?.certification;
   return certification || "정보 없음";
 }
 
-function hasValidImage(item) {
+function hasValidImage(item: TmdbMovie) {
   return Boolean(item?.poster_path || item?.backdrop_path);
 }

@@ -1,11 +1,11 @@
 import React, { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import axios from "../../api/axios";
-import MovieGrid from "../../components/MovieGrid.jsx";
+import MovieGrid from "../../components/MovieGrid.js";
 import MovieModal from "../../components/MovieModal/MovieModal.jsx";
 import requests from "../../api/requests.js";
 import "./CategoryPage.css";
-
+import { TmdbMovie } from "../../types/tmdb";
 const CATEGORY_CONFIG = {
   series: { title: "시리즈", fetchUrl: requests.fetchNetflixOriginals },
   movies: { title: "영화", fetchUrl: requests.fetchTopRated },
@@ -15,9 +15,14 @@ const CATEGORY_CONFIG = {
 
 export default function CategoryPage() {
   const { categoryId } = useParams();
-  const config = categoryId ? CATEGORY_CONFIG[categoryId] : undefined;
-  const [items, setItems] = useState([]);
-  const [status, setStatus] = useState({ loading: false, error: null });
+  const config = categoryId
+    ? CATEGORY_CONFIG[categoryId as keyof typeof CATEGORY_CONFIG]
+    : undefined;
+  const [items, setItems] = useState<TmdbMovie[]>([]);
+  const [status, setStatus] = useState<{
+    loading: boolean;
+    error: string | null;
+  }>({ loading: false, error: null });
   const [modalOpen, setModalOpen] = useState(false);
   const [selectedMovie, setSelectedMovie] = useState(null);
 
@@ -30,7 +35,9 @@ export default function CategoryPage() {
       try {
         const response = await axios.get(config.fetchUrl);
         if (cancelled) return;
-        const results = (response.data.results || []).filter(hasDisplayableImage);
+        const results = (response.data.results || []).filter(
+          hasDisplayableImage
+        );
         setItems(results);
         setStatus({ loading: false, error: null });
       } catch (error) {
@@ -49,10 +56,10 @@ export default function CategoryPage() {
     };
   }, [config?.fetchUrl]);
 
-  const handleSelect = async (movie) => {
+  const handleSelect = async (movie: TmdbMovie) => {
     if (!movie) return;
     try {
-      const type = getMediaType(movie, config?.fetchUrl);
+      const type = getMediaType(movie, config?.fetchUrl || "");
       const appendParam =
         type === "tv"
           ? "videos,credits,content_ratings"
@@ -81,24 +88,31 @@ export default function CategoryPage() {
   return (
     <div className="category-page">
       <h1>{config.title}</h1>
-      {status.loading && <p className="category-page__status">불러오는 중...</p>}
-      {status.error && <p className="category-page__status error">{status.error}</p>}
+      {status.loading && (
+        <p className="category-page__status">불러오는 중...</p>
+      )}
+      {status.error && (
+        <p className="category-page__status error">{status.error}</p>
+      )}
       {!status.loading && !status.error && (
         <MovieGrid items={items} onSelect={handleSelect} />
       )}
 
       {modalOpen && selectedMovie && (
-        <MovieModal {...selectedMovie} setModalOpen={setModalOpen} />
+        <MovieModal
+          {...(selectedMovie as TmdbMovie)}
+          setModalOpen={setModalOpen}
+        />
       )}
     </div>
   );
 }
 
-function hasDisplayableImage(item) {
+function hasDisplayableImage(item: TmdbMovie) {
   return Boolean(item?.backdrop_path || item?.poster_path);
 }
 
-function getMediaType(item, fetchUrl) {
+function getMediaType(item: TmdbMovie, fetchUrl: string) {
   if (item?.media_type === "tv") return "tv";
   if (item?.media_type === "movie") return "movie";
   if (fetchUrl?.includes("/tv")) return "tv";

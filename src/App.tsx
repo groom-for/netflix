@@ -1,11 +1,10 @@
-import React from "react";
 import { Routes, Route } from "react-router-dom";
 import "./App.css";
-import Nav from "./components/Nav.jsx";
-import Banner from "./components/Banner.jsx";
+import Nav from "./components/Nav";
+import Banner from "./components/Banner";
 import requests from "./api/requests.js";
 import Row from "./components/Row";
-import Footer from "./components/Footer.jsx";
+import Footer from "./components/Footer";
 import SearchPage from "./pages/SearchPage";
 import DetailPage from "./pages/DetailPage";
 import CategoryPage from "./pages/CategoryPage";

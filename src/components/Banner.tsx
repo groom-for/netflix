@@ -3,17 +3,12 @@ import React, { useEffect, useState } from "react";
 import requests from "../api/requests.js";
 import "./Banner.css";
 import MovieModal from "./MovieModal/MovieModal.jsx";
-
-/**
- * @typedef {import("../types/tmdb").TmdbMovie} TmdbMovie
- */
+import { TmdbMovie } from "../types/tmdb";
 
 const MIN_OVERVIEW_LENGTH = 40;
 
 export default function Banner() {
-  const [movie, setMovie] = useState(
-    /** @type {TmdbMovie | null} */ (null)
-  );
+  const [movie, setMovie] = useState<TmdbMovie | null>(null);
   const [isPlaying, setIsPlaying] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
 
@@ -32,7 +27,7 @@ export default function Banner() {
 
     const candidates = results.filter(
       /** @param {TmdbMovie} item */
-      (item) =>
+      (item: TmdbMovie) =>
         item?.backdrop_path &&
         item?.overview &&
         item.overview.trim().length >= MIN_OVERVIEW_LENGTH
@@ -53,7 +48,7 @@ export default function Banner() {
       const detailResponse = await axios.get(`movie/${picked.id}`, {
         params: { append_to_response: "videos,credits,release_dates" },
       });
-      const detail = /** @type {TmdbMovie} */ (detailResponse.data);
+      const detail = /** @type {TmdbMovie} */ detailResponse.data;
 
       const hasVideos = (detail.videos?.results || []).length > 0;
       if (hasVideos && detail.backdrop_path && detail.overview) {
@@ -68,7 +63,7 @@ export default function Banner() {
       const fallbackResponse = await axios.get(`movie/${fallback.id}`, {
         params: { append_to_response: "videos,credits,release_dates" },
       });
-      const fallbackDetail = /** @type {TmdbMovie} */ (fallbackResponse.data);
+      const fallbackDetail = /** @type {TmdbMovie} */ fallbackResponse.data;
       setMovie(fallbackDetail);
     }
   };
@@ -77,7 +72,7 @@ export default function Banner() {
    * @param {string} str
    * @param {number} n
    */
-  const truncate = (str, n) => {
+  const truncate = (str: string, n: number) => {
     return str?.length > n ? str.substr(0, n - 1) + "..." : str;
   };
 
@@ -116,7 +111,11 @@ export default function Banner() {
         >
           <iframe
             className="banner__video"
-            src={`https://www.youtube.com/embed/${trailerKey || "dQw4w9WgXcQ"}?controls=1&autoplay=1&loop=1&mute=1&playlist=${trailerKey || "dQw4w9WgXcQ"}`}
+            src={`https://www.youtube.com/embed/${
+              trailerKey || "dQw4w9WgXcQ"
+            }?controls=1&autoplay=1&loop=1&mute=1&playlist=${
+              trailerKey || "dQw4w9WgXcQ"
+            }`}
             title="Banner trailer"
             frameBorder="0"
             allow="autoplay; fullscreen"
@@ -179,9 +178,7 @@ export default function Banner() {
       </div>
       <div className="banner--fadeBottom" />
 
-      {isModalOpen && (
-        <MovieModal {...movie} setModalOpen={setIsModalOpen} />
-      )}
+      {isModalOpen && <MovieModal {...movie} setModalOpen={setIsModalOpen} />}
     </header>
   );
 }

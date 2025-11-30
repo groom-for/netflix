@@ -2,10 +2,10 @@ import React, { useState, useEffect } from "react";
 import { useLocation } from "react-router-dom";
 import axios from "../../api/axios";
 import "./SearchPage.css";
-import SearchResults from "../../components/SearchResults.jsx";
+import SearchResults from "../../components/SearchResults.js";
 import MovieModal from "../../components/MovieModal/MovieModal.jsx";
 import useDebounce from "../../hooks/useDebounce";
-
+import { TmdbMovie } from "../../types/tmdb";
 const useQuery = () => new URLSearchParams(useLocation().search);
 
 const SearchPage = () => {
@@ -13,7 +13,10 @@ const SearchPage = () => {
   const searchTerm = query.get("q") ?? "";
   const debouncedSearchTerm = useDebounce(searchTerm, 500);
   const [searchResults, setSearchResults] = useState([]);
-  const [status, setStatus] = useState({ loading: false, error: null });
+  const [status, setStatus] = useState<{
+    loading: boolean;
+    error: string | null;
+  }>({ loading: false, error: null });
   const [selectedMovie, setSelectedMovie] = useState(null);
 
   useEffect(() => {
@@ -72,14 +75,20 @@ const SearchPage = () => {
             });
             setSelectedMovie(data);
           } catch (error) {
-            setStatus({ loading: false, error: "영화 정보를 불러오지 못했습니다." });
+            setStatus({
+              loading: false,
+              error: "영화 정보를 불러오지 못했습니다.",
+            });
           }
         }}
         hasSearched={Boolean(searchTerm.trim())}
       />
 
       {selectedMovie && (
-        <MovieModal {...selectedMovie} onClose={() => setSelectedMovie(null)} />
+        <MovieModal
+          {...(selectedMovie as TmdbMovie)}
+          onClose={() => setSelectedMovie(null)}
+        />
       )}
     </div>
   );
@@ -87,7 +96,7 @@ const SearchPage = () => {
 
 export default SearchPage;
 
-function getMediaType(item) {
+function getMediaType(item: TmdbMovie) {
   if (item.media_type === "tv") return "tv";
   if (item.media_type === "movie") return "movie";
   if (item.first_air_date && !item.release_date) return "tv";
