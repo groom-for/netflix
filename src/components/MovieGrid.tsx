@@ -1,12 +1,18 @@
 import React from "react";
 import "./SearchResults.css";
+import { TmdbMovie } from "../types/tmdb";
 
 const IMAGE_BASE = "https://image.tmdb.org/t/p/w500";
+
+interface MovieGridProps {
+  items: TmdbMovie[];
+  onSelect: (movie: TmdbMovie) => void;
+}
 
 /**
  * 공통 카드 그리드 레이아웃.
  */
-export default function MovieGrid({ items = [], onSelect }) {
+export default function MovieGrid({ items = [], onSelect }: MovieGridProps) {
   if (!items.length) {
     return (
       <div className="search-results__status">

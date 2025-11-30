@@ -64,7 +64,7 @@ export interface TmdbMovie {
   popularity?: number;
   adult?: boolean;
   video?: boolean;
-  media_type?: "movie" | "tv";
+  media_type?: "movie" | "tv" | "person";
   original_language?: string;
   genre_ids?: number[];
   videos?: TmdbVideosPayload;
