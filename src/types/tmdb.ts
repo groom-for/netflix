@@ -52,18 +52,26 @@ export interface TmdbMovie {
   name?: string;
   title?: string;
   original_name?: string;
+  original_title?: string;
   overview?: string;
   backdrop_path?: string | null;
   poster_path?: string | null;
+  production_countries?: { iso_3166_1: string }[];
   release_date?: string;
   first_air_date?: string;
   vote_average?: number;
+  vote_count?: number;
+  popularity?: number;
+  adult?: boolean;
+  video?: boolean;
+  media_type?: "movie" | "tv";
+  original_language?: string;
+  genre_ids?: number[];
   videos?: TmdbVideosPayload;
   credits?: TmdbCredits;
   genres?: TmdbGenre[];
   release_dates?: { results?: TmdbReleaseDateEntry[] };
   tagline?: string;
-  adult?: boolean;
   content_ratings?: {
     results?: Array<{
       iso_3166_1: string;

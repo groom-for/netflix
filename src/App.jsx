@@ -4,7 +4,7 @@ import "./App.css";
 import Nav from "./components/Nav.jsx";
 import Banner from "./components/Banner.jsx";
 import requests from "./api/requests.js";
-import Row from "./components/Row.jsx";
+import Row from "./components/Row";
 import Footer from "./components/Footer.jsx";
 import SearchPage from "./pages/SearchPage";
 import DetailPage from "./pages/DetailPage";
@@ -25,12 +25,12 @@ const HomePage = () => (
     <Row title="Action Movies" id="AM" fetchUrl={requests.fetchActionMovies} />
     <Row title="Comedy Movies" id="CM" fetchUrl={requests.fetchComedyMovies} />
     <Row title="Horror Mivies" id="HM" fetchUrl={requests.fetchHorrorMovies} />
-    <Row title="Romance Movies" id="RM" fetchUrl={requests.fetchRomanceMovies} />
     <Row
-      title="Documentaries"
-      id="DM"
-      fetchUrl={requests.fetchDocumentaries}
+      title="Romance Movies"
+      id="RM"
+      fetchUrl={requests.fetchRomanceMovies}
     />
+    <Row title="Documentaries" id="DM" fetchUrl={requests.fetchDocumentaries} />
   </>
 );
 
