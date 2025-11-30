@@ -1,13 +1,16 @@
 import React, { useEffect, useState } from "react";
 import axios from "../../api/axios";
-import MovieGrid from "../../components/MovieGrid.jsx";
+import MovieGrid from "../../components/MovieGrid.js";
 import MovieModal from "../../components/MovieModal/MovieModal.jsx";
 import requests from "../../api/requests.js";
 import "./KidsPage.css";
-
+import { TmdbMovie } from "../../types/tmdb";
 export default function KidsPage() {
   const [items, setItems] = useState([]);
-  const [status, setStatus] = useState({ loading: false, error: null });
+  const [status, setStatus] = useState<{
+    loading: boolean;
+    error: string | null;
+  }>({ loading: false, error: null });
   const [selectedMovie, setSelectedMovie] = useState(null);
   const [modalOpen, setModalOpen] = useState(false);
 
@@ -19,7 +22,9 @@ export default function KidsPage() {
       try {
         const response = await axios.get(requests.fetchKidsFriendly);
         if (cancelled) return;
-        const results = (response.data.results || []).filter(hasDisplayableImage);
+        const results = (response.data.results || []).filter(
+          hasDisplayableImage
+        );
         setItems(results);
         setStatus({ loading: false, error: null });
       } catch (error) {
@@ -38,7 +43,7 @@ export default function KidsPage() {
     };
   }, []);
 
-  const handleSelect = async (movie) => {
+  const handleSelect = async (movie: TmdbMovie) => {
     if (!movie) return;
     try {
       const type = getMediaType(movie);
@@ -67,24 +72,29 @@ export default function KidsPage() {
 
       {status.loading && <p className="kids-page__status">불러오는 중...</p>}
       {status.error && (
-        <p className="kids-page__status kids-page__status--error">{status.error}</p>
+        <p className="kids-page__status kids-page__status--error">
+          {status.error}
+        </p>
       )}
       {!status.loading && !status.error && (
         <MovieGrid items={items} onSelect={handleSelect} />
       )}
 
       {modalOpen && selectedMovie && (
-        <MovieModal {...selectedMovie} setModalOpen={setModalOpen} />
+        <MovieModal
+          {...(selectedMovie as TmdbMovie)}
+          setModalOpen={setModalOpen}
+        />
       )}
     </div>
   );
 }
 
-function hasDisplayableImage(item) {
+function hasDisplayableImage(item: TmdbMovie) {
   return Boolean(item?.backdrop_path || item?.poster_path);
 }
 
-function getMediaType(item) {
+function getMediaType(item: TmdbMovie) {
   if (item?.media_type === "tv") return "tv";
   if (item?.media_type === "movie") return "movie";
   if (item?.first_air_date && !item?.release_date) return "tv";

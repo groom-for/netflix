@@ -1,10 +1,11 @@
-import React, { useEffect, useState } from 'react';
-import axios from '../api/axios';
-import './Row.css';
+import React, { useEffect, useState } from "react";
+import axios from "../api/axios";
+import "./Row.css";
 import { FaChevronLeft } from "react-icons/fa";
 import { FaChevronRight } from "react-icons/fa";
-import MovieModal from './MovieModal/MovieModal';
-
+import MovieModal from "./MovieModal/MovieModal";
+import { TmdbReleaseDateEntry } from "../types/tmdb";
+import { RowProps, TmdbMovie, FetchMoviesResponse } from "../types/tmdb";
 /**
  * @typedef {import('../types/tmdb').TmdbMovie} TmdbMovie
  * @typedef {import('../types/tmdb').RowProps} RowProps
@@ -24,28 +25,28 @@ const ADULT_CERTIFICATIONS = new Set([
   "X18",
 ]);
 
-export default function Row({ title, fetchUrl, isLargeRow, id }) {
-  const [movies, setMovies] = useState(
-    /** @type {TmdbMovie[]} */([])
-  );
+export default function Row({ title, fetchUrl, isLargeRow, id }: RowProps) {
+  const [movies, setMovies] = useState<TmdbMovie[]>([]);
   const [modalOpen, setModalOpen] = useState(false);
-  const [movieSelected, setMovieSelection] = useState(
-    /** @type {TmdbMovie | null} */(null)
-  );
+  const [movieSelected, setMovieSelection] = useState<TmdbMovie | null>(null);
 
   useEffect(() => {
     fetchMovieData();
   }, [fetchUrl]);
 
   const fetchMovieData = async () => {
-    const request = await axios.get(fetchUrl);
-    const results = request.data.results || [];
-    const filtered = [];
+    const request = await axios.get<FetchMoviesResponse>(fetchUrl);
+    console.log(
+      request.data.results.filter((item) => item.original_language === "ja")
+    );
+    const results: TmdbMovie[] = request.data.results || [];
+    const filtered: TmdbMovie[] = [];
 
     for (const item of results) {
       if (isExcludedTitle(item)) continue;
       if (isUnwantedAnime(item)) continue;
       if (!hasValidImage(item)) continue;
+      console.log(item);
       if (await isRestrictedAnime(item, fetchUrl)) continue;
       filtered.push(item);
     }
@@ -54,7 +55,7 @@ export default function Row({ title, fetchUrl, isLargeRow, id }) {
     return request;
   };
 
-  const handleCardClick = async (movie) => {
+  const handleCardClick = async (movie: TmdbMovie) => {
     try {
       const type = getMediaType(movie, fetchUrl);
       const appendParam =
@@ -82,7 +83,9 @@ export default function Row({ title, fetchUrl, isLargeRow, id }) {
             if (slider) slider.scrollLeft -= window.innerWidth - 80;
           }}
         >
-          <span className="arrow"><FaChevronLeft /></span>
+          <span className="arrow">
+            <FaChevronLeft />
+          </span>
         </div>
 
         <div id={id} className="row__posters">
@@ -94,14 +97,14 @@ export default function Row({ title, fetchUrl, isLargeRow, id }) {
 
             return (
               <img
+                draggable="false"
                 key={movie.id}
                 className={`row__poster ${isLargeRow && "row__posterLarge"}`}
                 src={`${BASE_URL}${imagePath}`}
                 loading="lazy"
                 alt={movie.title || movie.name || "movie poster"}
                 onClick={() => handleCardClick(movie)}
-                draggable="false"
-                style={{ userSelect: "none", WebkitUserDrag: "none" }}
+                style={{ userSelect: "none" }}
               />
             );
           })}
@@ -114,51 +117,53 @@ export default function Row({ title, fetchUrl, isLargeRow, id }) {
             if (slider) slider.scrollLeft += window.innerWidth - 80;
           }}
         >
-          <span className="arrow"><FaChevronRight /></span>
+          <span className="arrow">
+            <FaChevronRight />
+          </span>
         </div>
       </div>
 
-      {
-        modalOpen && movieSelected && (
-          <MovieModal {...movieSelected} setModalOpen={setModalOpen} />
-        )
-      }
+      {modalOpen && movieSelected && (
+        <MovieModal {...movieSelected} setModalOpen={setModalOpen} />
+      )}
     </section>
   );
 }
 
-function hasValidImage(item) {
+function hasValidImage(item: TmdbMovie) {
   return Boolean(item?.backdrop_path || item?.poster_path);
 }
 
 const EXCLUDED_TITLE =
   "学園黙示録 HIGHSCHOOL OF THE DEAD ドリフターズ・オブ・ザ・デッド";
 
-function isExcludedTitle(item) {
+function isExcludedTitle(item: TmdbMovie) {
   const candidates = [
     item?.title,
-    item?.original_title,
+    item?.original_name,
     item?.name,
     item?.original_name,
   ];
   return candidates.some((title) => title === EXCLUDED_TITLE);
 }
 
-function isJapaneseAnimeCandidate(item) {
-  const originCountries = item.origin_country || [];
-  const isJapaneseOrigin = originCountries.includes("JP") || item.original_language === "ja";
+function isJapaneseAnimeCandidate(item: TmdbMovie) {
+  const productionCountries = item.production_countries || [];
+  const isJapaneseOrigin =
+    productionCountries.some((country) => country.iso_3166_1 === "JP") ||
+    item.original_language === "ja";
   const hasAnimationGenre = (item.genre_ids || []).includes(16);
   return isJapaneseOrigin && hasAnimationGenre;
 }
 
-function isUnwantedAnime(item) {
+function isUnwantedAnime(item: TmdbMovie) {
   const genreIds = item?.genre_ids || [];
   const hasAnimation = genreIds.includes(16);
   const hasHorror = genreIds.includes(27);
   return Boolean(item?.adult) || (hasAnimation && hasHorror);
 }
 
-async function isRestrictedAnime(item, fetchUrl) {
+async function isRestrictedAnime(item: TmdbMovie, fetchUrl: string) {
   if (!isJapaneseAnimeCandidate(item)) return false;
   if (item.adult) return true;
 
@@ -168,6 +173,7 @@ async function isRestrictedAnime(item, fetchUrl) {
     const { data } = await axios.get(`/${type}/${item.id}`, {
       params: { append_to_response: append },
     });
+    console.log("data", data);
     return hasAdultCertification(data, type);
   } catch (error) {
     console.error("등급 정보를 확인하지 못했습니다.", error);
@@ -175,7 +181,7 @@ async function isRestrictedAnime(item, fetchUrl) {
   }
 }
 
-function getMediaType(item, fetchUrl) {
+function getMediaType(item: TmdbMovie, fetchUrl: string) {
   if (item.media_type === "tv") return "tv";
   if (item.media_type === "movie") return "movie";
   if (fetchUrl.includes("/tv")) return "tv";
@@ -184,19 +190,22 @@ function getMediaType(item, fetchUrl) {
   return "movie";
 }
 
-function hasAdultCertification(detail, type) {
+function hasAdultCertification(item: TmdbMovie, type: string) {
+  console.log(item);
   if (type === "tv") {
-    const ratings = detail?.content_ratings?.results || [];
-    return ratings.some((entry) => {
+    const ratings = item?.content_ratings?.results || [];
+    return ratings.some((entry: any) => {
       const rating = entry.rating?.toUpperCase().trim();
       return rating && ADULT_CERTIFICATIONS.has(rating);
     });
   }
 
-  const releaseCountries = detail?.release_dates?.results || [];
-  return releaseCountries.some((country) =>
-    (country.release_dates || []).some((release) => {
-      const rating = release.certification?.toUpperCase().trim();
+  const releaseCountries = item?.release_dates?.results || [];
+  return releaseCountries.some((country: any) =>
+    (country.release_dates || []).some((release: TmdbReleaseDateEntry) => {
+      const rating = release.release_dates?.[0]?.certification
+        ?.toUpperCase()
+        .trim();
       return rating && ADULT_CERTIFICATIONS.has(rating);
     })
   );

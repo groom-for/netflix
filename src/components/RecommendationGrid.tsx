@@ -1,9 +1,16 @@
 import React from "react";
 import "./SearchResults.css";
+import { TmdbMovie } from "../types/tmdb";
 
 const IMAGE_BASE = "https://image.tmdb.org/t/p/w500";
 
-export default function RecommendationGrid({ movies, onSelect }) {
+export default function RecommendationGrid({
+  movies,
+  onSelect,
+}: {
+  movies: TmdbMovie[];
+  onSelect: (movie: TmdbMovie) => void;
+}) {
   const filtered = (movies || []).filter(
     (item) => item && (item.poster_path || item.backdrop_path)
   );

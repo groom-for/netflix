@@ -1,7 +1,15 @@
-import React from "react";
 import "./SearchResults.css";
 import MovieGrid from "./MovieGrid.jsx";
+import { TmdbMovie } from "../types/tmdb";
 
+interface SearchResultsProps {
+  searchTerm: string;
+  results: TmdbMovie[];
+  isLoading: boolean;
+  error: string | null;
+  onSelect: (movie: TmdbMovie) => void;
+  hasSearched: boolean;
+}
 /**
  * 2열 그리드 검색 결과 영역.
  */
@@ -12,7 +20,7 @@ export default function SearchResults({
   error,
   onSelect,
   hasSearched,
-}) {
+}: SearchResultsProps) {
   const filteredResults = (results || []).filter(
     (item) =>
       item &&
